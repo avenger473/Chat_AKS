@@ -33,7 +33,10 @@ message.addEventListener('keydown', function(){
 
 message.addEventListener('keyup', function(){
     
-    socket.emit('nottyping');
+    setTimeout(function(){
+        socket.emit('nottyping');
+    },1000);
+    
     
 });
 

@@ -27,14 +27,21 @@ btn.addEventListener('click', function(){
     message.value= "";
 });
 
-message.addEventListener('keypress', function(){
+message.addEventListener('keydown', function(){
     socket.emit('typing', handle.value);
 });
+
+message.addEventListener('keyup', function(){
+    
+    socket.emit('nottyping');
+    
+});
+
 
 //listening to events
 
 socket.on('chat', function(data){
-    output.innerHTML+='<p><strong>' + data.handle + ':</strong>' + data.message;
+    output.innerHTML+='<p><strong>' + data.handle + ':</strong>' + data.message+'</p>';
     feedback.innerHTML= '';
 });
 
@@ -42,12 +49,17 @@ socket.on('typing', function(data){
     feedback.innerHTML='<p>'+ data+ ' is typing a message...</p>';
 });
 
-socket.on('useradd', function(data){
+socket.on('nottyping', function(data){
+    feedback.innerHTML='';
+});
+
+socket.on('updateUser', function(data){
+    useronline.innerHTML='';
     for(var i=0; i<data.length; i++)
     {
         if(data[i]==handle.value)
         continue;
 
-        useronline.innerHTML+='<p>'+ data[i] +'</p>';
+        useronline.innerHTML+='<p>'+ data[i].username +'</p>';
     }
 });

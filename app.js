@@ -18,11 +18,21 @@ io.on('connection', function(socket){
     //console.log(socket);
 
     socket.on('useradded', function(data){
-        user.push(data);
+        user.push({username: data, id: socket.id});
         console.log('user added: ', data);
-        socket.broadcast.emit('useradd', user);
+        updateUsersnames();
+    }); 
+
+    socket.on('disconnect', function(data){
+        console.log(socket.id);
+        user.splice( user.indexOf({id: socket.id}), 1 );
+        console.log(user);
+        updateUsersnames();
     });
-    
+
+    function updateUsersnames(){
+        io.sockets.emit('updateUser', user);
+    }
 
     socket.on('chat', function(data){
         io.sockets.emit('chat', data); //sending recieved data to all connected clients
@@ -32,8 +42,10 @@ io.on('connection', function(socket){
         socket.broadcast.emit('typing', data);  //to send to all the clients except the sender client
     });
 
-    socket.on('disconnect', function(){
-        console.log('Disconnected'+socket.id);
+    socket.on('nottyping', function(data){
+        socket.broadcast.emit('nottyping');  //to send to all the clients except the sender client
     });
+
+    
 });
 
